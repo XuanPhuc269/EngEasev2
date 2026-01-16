@@ -14,24 +14,20 @@ export const errorHandler = (
     let error = { ...err };
     error.message = err.message;
 
-    // Log error for debugging
     console.error(err);
 
-    // Mongoose bad ObjectId
     if (err.name === 'CastError') {
         const message = 'Tài nguyên không tìm thấy';
         error = { name: 'CastError', message } as ErrorResponse;
         error.statusCode = 404;
     }
 
-    // Mongoose duplicate key
     if ((err as any).code === 11000) {
         const message = 'Dữ liệu đã tồn tại';
         error = { name: 'DuplicateError', message } as ErrorResponse;
         error.statusCode = 400;
     }
 
-    // Mongoose validation error
     if (err.name === 'ValidationError') {
         const message = Object.values((err as any).errors)
             .map((val: any) => val.message)

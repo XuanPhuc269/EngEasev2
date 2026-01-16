@@ -16,7 +16,6 @@ export const authenticate = async (
     next: NextFunction
 ): Promise<void> => {
     try {
-        // Get token from header
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -29,10 +28,8 @@ export const authenticate = async (
 
         const token = authHeader.split(' ')[1];
 
-        // Verify token
         const decoded = verifyAccessToken(token);
 
-        // Check if user still exists
         const user = await User.findById(decoded.userId);
         if (!user) {
             res.status(401).json({
@@ -42,7 +39,6 @@ export const authenticate = async (
             return;
         }
 
-        // Attach user to request
         req.user = {
             userId: decoded.userId,
             email: decoded.email,
