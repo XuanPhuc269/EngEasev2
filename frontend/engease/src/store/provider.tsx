@@ -6,8 +6,9 @@ import { ReactNode, useEffect } from 'react';
 import { useAppDispatch } from './hooks';
 import { initializeAuth, setUser, setLoading } from './slices/authSlice';
 import { useLazyGetCurrentUserQuery } from './api/authApi';
+import Cookies from 'js-cookie';
 
-interface StoreProvideProps {
+interface StoreProviderProps {
     children: ReactNode;
 }
 
@@ -18,25 +19,25 @@ function AuthInitializer({ children }: { children: ReactNode }) {
     useEffect(() => {
         const initAuth = async () => {
             dispatch(initializeAuth());
-        }
+            
+            const accessToken = Cookies.get('accessToken');
 
-        const accessToken = Cookies.get('accessToken');
-
-        if (accessToken) {
-            try {
-                const result = await getCurrentUser().unwrap();
-                if (result.success) {
-                    dispatch(setUser(result.data));
-                }   
-            } catch (error) {
-                console.log('Failed to fetch current user: ', error);
+            if (accessToken) {
+                try {
+                    const result = await getCurrentUser().unwrap();
+                    if (result.success) {
+                        dispatch(setUser(result.data));
+                    }
+                } catch (error) {
+                    console.log('Failed to fetch current user:', error);
+                    dispatch(setLoading(false));
+                }
+            } else {
                 dispatch(setLoading(false));
-            } 
-            else {
-            dispatch(setLoading(false));
-        }
-    }
-    initAuth();
+            }
+        };
+
+        initAuth();
     }, [dispatch, getCurrentUser]);
     
     return <>{children}</>;

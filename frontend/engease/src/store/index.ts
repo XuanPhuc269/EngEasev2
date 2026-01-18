@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { setUpListeners } from '@reduxjs/toolkit/query';
+import { setupListeners } from '@reduxjs/toolkit/query';
 import { baseApi } from './api/baseApi';
 import authReducer from './slices/authSlice';
 import testReducer from './slices/testSlice';
@@ -7,7 +7,7 @@ import progressReducer from './slices/progressSlice';
 
 export const store = configureStore({
     reducer: {
-        [baseApi.reducerPath]: baseApi.reducer,,
+        [baseApi.reducerPath]: baseApi.reducer,
         auth: authReducer,
         test: testReducer,
         progress: progressReducer,
@@ -21,7 +21,7 @@ export const store = configureStore({
     devTools: process.env.NODE_ENV !== 'production',
 });
 
-setUpListeners(store.dispatch);
+setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
