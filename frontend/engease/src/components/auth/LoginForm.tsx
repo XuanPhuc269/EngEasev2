@@ -29,7 +29,8 @@ import { z } from 'zod';
 import { useLoginMutation } from '@/store/api/authApi';
 import { useAppDispatch } from '@/store/hooks';
 import { setCredentials } from '@/store/slices/authSlice';
-import { LoginRequest } from '@/types';
+import { LoginRequest, UserRole } from '@/types';
+import { getDefaultRedirectPath } from '@/components/guards';
 
 // Validation schema
 const loginSchema = z.object({
@@ -75,11 +76,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
   const onSubmit = async (data: LoginFormData) => {
     setServerError(null);
-
     try {
       const result = await login(data as LoginRequest).unwrap();
 
+      // Log để debug
+      console.log('Login result:', result);
+
       if (result.success && result.data) {
+        // Lưu tokens
         dispatch(
           setCredentials({
             user: result.data.user,
@@ -88,14 +92,20 @@ const LoginForm: React.FC<LoginFormProps> = ({
           })
         );
 
+        // Redirect based on user role
+        // Admin/Teacher -> dashboard, Student -> tests (or custom redirectTo)
+        const targetPath = 
+          result.data.user.role === UserRole.ADMIN || result.data.user.role === UserRole.TEACHER
+            ? '/dashboard'
+            : redirectTo;
+        
+        console.log(`Redirecting ${result.data.user.role} to:`, targetPath);
+        router.push(targetPath);
         onSuccess?.();
-        router.push(redirectTo);
       }
-    } catch (error: unknown) {
-      const err = error as { data?: { message?: string } };
-      setServerError(
-        err?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.'
-      );
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setServerError(error?.data?.message || 'Đăng nhập thất bại');
     }
   };
 

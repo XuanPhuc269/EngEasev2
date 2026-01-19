@@ -6,6 +6,7 @@ import {
     updateTest,
     deleteTest,
     publishTest,
+    unpublishTest,
     getTestsByType,
 } from '../controllers/test.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
@@ -89,6 +90,19 @@ router.patch(
     authorize(UserRole.TEACHER, UserRole.ADMIN),
     idParamValidation,
     publishTest
+);
+
+/**
+ * @route   PATCH /api/tests/:id/unpublish
+ * @desc    Unpublish test
+ * @access  Private/Teacher/Admin
+ */
+router.patch(
+    '/:id/unpublish',
+    authenticate,
+    authorize(UserRole.TEACHER, UserRole.ADMIN),
+    idParamValidation,
+    unpublishTest
 );
 
 export default router;

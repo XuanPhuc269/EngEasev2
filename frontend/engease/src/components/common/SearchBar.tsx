@@ -43,9 +43,17 @@ interface SearchBarProps {
    */
   placeholder?: string;
   /**
-   * Callback when search value changes
+   * Callback when search value changes (debounced)
    */
-  onSearch: (value: string) => void;
+  onSearch?: (value: string) => void;
+  /**
+   * Callback when search value changes (immediate)
+   */
+  onChange?: (value: string) => void;
+  /**
+   * Controlled value
+   */
+  value?: string;
   /**
    * Debounce delay in milliseconds
    * @default 300
@@ -88,6 +96,8 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = 'Tìm kiếm...',
   onSearch,
+  onChange,
+  value: controlledValue,
   debounceDelay = 300,
   defaultValue = '',
   showClearButton = true,
@@ -97,7 +107,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
   size = 'medium',
   fullWidth = true,
 }) => {
-  const [searchValue, setSearchValue] = useState(defaultValue);
+  const isControlled = controlledValue !== undefined;
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const searchValue = isControlled ? controlledValue : internalValue;
+  
   const [showFilters, setShowFilters] = useState(false);
   const [filterValues, setFilterValues] = useState<Record<string, string>>(
     filters?.reduce((acc, filter) => ({ ...acc, [filter.key]: filter.value }), {}) || {}
@@ -108,17 +121,36 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   // Effect to trigger search when debounced value changes
   React.useEffect(() => {
-    onSearch(debouncedSearch);
+    if (onSearch) {
+      onSearch(debouncedSearch);
+    }
   }, [debouncedSearch, onSearch]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(event.target.value);
+    const newValue = event.target.value;
+    
+    // Update internal state if not controlled
+    if (!isControlled) {
+      setInternalValue(newValue);
+    }
+    
+    // Call onChange immediately if provided
+    if (onChange) {
+      onChange(newValue);
+    }
   };
 
   const handleClear = useCallback(() => {
-    setSearchValue('');
-    onSearch('');
-  }, [onSearch]);
+    if (!isControlled) {
+      setInternalValue('');
+    }
+    if (onChange) {
+      onChange('');
+    }
+    if (onSearch) {
+      onSearch('');
+    }
+  }, [isControlled, onChange, onSearch]);
 
   const handleFilterChange = (key: string) => (event: SelectChangeEvent) => {
     const newValue = event.target.value;

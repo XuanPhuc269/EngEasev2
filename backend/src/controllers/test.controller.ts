@@ -179,6 +179,37 @@ export const publishTest = async (req: AuthRequest, res: Response): Promise<void
     }
 };
 
+export const unpublishTest = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+        const { id } = req.params;
+
+        if (!req.user) {
+            errorResponse(res, 'Người dùng chưa đăng nhập', 401);
+            return;
+        }
+
+        const test = await Test.findById(id);
+        if (!test) {
+            errorResponse(res, 'Bài test không tồn tại', 404);
+            return;
+        }
+
+        // Check if user is the creator or admin
+        if (test.createdBy.toString() !== req.user.userId && req.user.role !== 'admin') {
+            errorResponse(res, 'Bạn không có quyền unpublish bài test này', 403);
+            return;
+        }
+
+        test.isPublished = false;
+        await test.save();
+
+        successResponse(res, test, 'Unpublish bài test thành công');
+    } catch (error: any) {
+        console.error('Unpublish test error:', error);
+        errorResponse(res, error.message || 'Lỗi khi unpublish bài test', 500);
+    }
+};
+
 export const getTestsByType = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const { type } = req.params;

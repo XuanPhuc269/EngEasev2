@@ -102,6 +102,18 @@ export const testApi = baseApi.injectEndpoints({
         { type: 'Test', id: 'LIST' },
       ],
     }),
+
+    // PATCH /api/tests/:id/unpublish (Teacher/Admin)
+    unpublishTest: builder.mutation<TestResponse, string>({
+      query: (id) => ({
+        url: `/tests/${id}/unpublish`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        { type: 'Test', id },
+        { type: 'Test', id: 'LIST' },
+      ],
+    }),
   }),
 });
 
@@ -116,4 +128,5 @@ export const {
   useUpdateTestMutation,
   useDeleteTestMutation,
   usePublishTestMutation,
+  useUnpublishTestMutation,
 } = testApi;
