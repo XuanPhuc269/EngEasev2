@@ -19,6 +19,12 @@ export interface Progress {
   lastStudyDate?: string;
   targetScore?: number;
   progressToTarget?: number;
+  recentActivity?: Array<{
+    testTitle: string;
+    score: number;
+    isPassed: boolean;
+    createdAt: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 }

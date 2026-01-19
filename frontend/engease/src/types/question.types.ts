@@ -19,6 +19,7 @@ export interface Question {
   questionNumber: number;
   type: QuestionType;
   question: string;
+  passage?: string; // Reading passage content
   options?: Option[];
   correctAnswer?: string | string[];
   explanation?: string;
@@ -35,6 +36,7 @@ export interface CreateQuestionRequest {
   questionNumber: number;
   type: QuestionType;
   question: string;
+  passage?: string; // Reading passage content
   options?: Option[];
   correctAnswer?: string | string[];
   explanation?: string;

@@ -304,33 +304,6 @@ const TestDetail: React.FC<TestDetailProps> = ({ test, onEdit, canEdit = false }
               </Grid>
             </CardContent>
           </Card>
-
-          {/* Additional Content */}
-          {test.readingPassage && (
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography variant="h6" fontWeight={700} gutterBottom>
-                  Đoạn văn
-                </Typography>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
-                  {test.readingPassage}
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
-
-          {test.writingPrompt && (
-            <Card sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography variant="h6" fontWeight={700} gutterBottom>
-                  Đề bài Writing
-                </Typography>
-                <Divider sx={{ my: 2 }} />
-                <Typography variant="body2">{test.writingPrompt}</Typography>
-              </CardContent>
-            </Card>
-          )}
         </Grid>
 
         {/* Right Column: Meta Info */}

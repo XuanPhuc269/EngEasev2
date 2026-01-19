@@ -37,6 +37,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { logout } from '@/store/slices/authSlice';
 import { useLogoutMutation } from '@/store/api/authApi';
+import AuthGuard from '@/components/guards/AuthGuard';
+import RoleGuard from '@/components/guards/RoleGuard';
 
 const drawerWidth = 260;
 
@@ -75,7 +77,6 @@ export default function DashboardLayout({
       dispatch(logout());
       router.push('/');
     } catch (error) {
-      console.error('Logout failed:', error);
       dispatch(logout());
       router.push('/');
     }

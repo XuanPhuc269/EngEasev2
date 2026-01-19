@@ -104,7 +104,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
         onSuccess?.();
       }
     } catch (error: any) {
-      console.error('Login error:', error);
       setServerError(error?.data?.message || 'Đăng nhập thất bại');
     }
   };

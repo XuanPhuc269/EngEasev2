@@ -48,12 +48,16 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
   // API queries
   const { data: resultData, isLoading: resultLoading, error: resultError } = useGetTestResultQuery(resultId);
   const result = resultData?.data;
-  const { data: testData, isLoading: testLoading } = useGetTestByIdQuery(result?.testId || '', {
-    skip: !result?.testId,
+  
+  // testId can be either a string or an object with _id
+  const testIdString = typeof result?.testId === 'object' ? result?.testId._id : result?.testId;
+  
+  const { data: testData, isLoading: testLoading } = useGetTestByIdQuery(testIdString || '', {
+    skip: !testIdString,
   });
   const test = testData?.data;
-  const { data: questionsData, isLoading: questionsLoading } = useGetQuestionsByTestIdQuery(result?.testId || '', {
-    skip: !result?.testId,
+  const { data: questionsData, isLoading: questionsLoading } = useGetQuestionsByTestIdQuery(testIdString || '', {
+    skip: !testIdString,
   });
   const questions = questionsData?.data || [];
 
@@ -64,9 +68,9 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'success';
-    if (score >= 60) return 'info';
-    if (score >= 40) return 'warning';
+    if (score >= 7) return 'success';
+    if (score >= 5.5) return 'info';
+    if (score >= 4) return 'warning';
     return 'error';
   };
 
@@ -105,7 +109,7 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
         <Button
           variant="text"
           startIcon={<ArrowBack />}
-          onClick={() => router.push(`/tests/${result.testId}`)}
+          onClick={() => router.push(`/tests/${testIdString}`)}
           sx={{ mb: 2 }}
         >
           Quay lại
@@ -125,7 +129,7 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
           <Button
             variant="outlined"
             startIcon={<Refresh />}
-            onClick={() => router.push(`/tests/${result.testId}/take`)}
+            onClick={() => router.push(`/tests/${testIdString}/take`)}
           >
             Làm lại
           </Button>
@@ -158,7 +162,7 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
                       />
                       <CircularProgress
                         variant="determinate"
-                        value={result.score}
+                        value={(result.score / 9) * 100}
                         size={180}
                         thickness={4}
                         color={getScoreColor(result.score)}
@@ -182,10 +186,10 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
                         }}
                       >
                         <Typography variant="h2" fontWeight={700} color={`${getScoreColor(result.score)}.main`}>
-                          {result.score}
+                          {result.score.toFixed(1)}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          / 100
+                          Band Score
                         </Typography>
                       </Box>
                     </Box>
@@ -227,7 +231,7 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
                         <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
                           <EmojiEvents color="primary" />
                           <Typography variant="h5" fontWeight={700}>
-                            {result.answers?.length || 0}
+                            {result.totalQuestions}
                           </Typography>
                         </Stack>
                         <Typography variant="body2" color="text.secondary">
@@ -242,7 +246,7 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
                         <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
                           <AccessTime color="info" />
                           <Typography variant="h5" fontWeight={700}>
-                            {formatters.formatDuration(result.timeSpent || 0)}
+                            {formatters.formatDurationFromSeconds(result.timeSpent || 0)}
                           </Typography>
                         </Stack>
                         <Typography variant="body2" color="text.secondary">
@@ -291,8 +295,8 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
                           size="small"
                         />
                         <Typography sx={{ flexGrow: 1 }}>
-                          {question.questionText.substring(0, 100)}
-                          {question.questionText.length > 100 && '...'}
+                          {question.question.substring(0, 100)}
+                          {question.question.length > 100 && '...'}
                         </Typography>
                         {isCorrect ? (
                           <CheckCircle color="success" />
@@ -304,12 +308,10 @@ const ResultDetailPage: React.FC<ResultDetailPageProps> = ({ resultId }) => {
                     <AccordionDetails>
                       <QuestionCard
                         question={question}
-                        questionNumber={index + 1}
-                        userAnswer={answer?.userAnswer || ''}
-                        correctAnswer={answer?.correctAnswer}
-                        isCorrect={isCorrect}
+                        answer={answer?.userAnswer || ''}
+                        showAnswer={true}
                         showExplanation={true}
-                        isReview={true}
+                        isCorrect={isCorrect}
                       />
                     </AccordionDetails>
                   </Accordion>

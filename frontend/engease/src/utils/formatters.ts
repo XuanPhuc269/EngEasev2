@@ -59,6 +59,23 @@ export const formatDuration = (minutes: number): string => {
 };
 
 /**
+ * Format duration in seconds to readable format
+ */
+export const formatDurationFromSeconds = (seconds: number): string => {
+  if (seconds < 60) return `${seconds} giây`;
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  
+  if (minutes < 60) {
+    return secs > 0 ? `${minutes} phút ${secs} giây` : `${minutes} phút`;
+  }
+  
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return mins > 0 ? `${hours} giờ ${mins} phút` : `${hours} giờ`;
+};
+
+/**
  * Format score/percentage
  */
 export const formatScore = (score: number, total?: number): string => {
@@ -81,6 +98,7 @@ export const formatters = {
   formatDateTime,
   formatRelativeTime,
   formatDuration,
+  formatDurationFromSeconds,
   formatScore,
   formatNumber,
 };

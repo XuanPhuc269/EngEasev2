@@ -176,6 +176,33 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           )}
         </Box>
 
+        {/* Reading Passage */}
+        {question.passage ? (
+          <Box
+            sx={{
+              mb: 3,
+              p: 2,
+              bgcolor: 'grey.50',
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="subtitle2" fontWeight={600} color="text.secondary" sx={{ mb: 1 }}>
+              📖 Bài đọc:
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                whiteSpace: 'pre-wrap',
+                lineHeight: 1.8,
+              }}
+            >
+              {question.passage}
+            </Typography>
+          </Box>
+        ) : null}
+
         {/* Question Text */}
         <Typography variant="body1" fontWeight={600} sx={{ mb: 2 }}>
           {question.question}

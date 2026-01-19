@@ -131,6 +131,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                     render={({ field }) => (
                       <TextField
                         {...field}
+                        id="test-title"
                         label="Tiêu đề bài test"
                         fullWidth
                         required
@@ -148,6 +149,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                     render={({ field }) => (
                       <TextField
                         {...field}
+                        id="test-description"
                         label="Mô tả"
                         fullWidth
                         multiline
@@ -165,8 +167,8 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                     control={control}
                     render={({ field }) => (
                       <FormControl fullWidth required error={!!errors.type}>
-                        <InputLabel>Loại bài test</InputLabel>
-                        <Select {...field} label="Loại bài test">
+                        <InputLabel id="test-type-label">Loại bài test</InputLabel>
+                        <Select {...field} labelId="test-type-label" id="test-type" label="Loại bài test">
                           <MenuItem value="listening">Listening</MenuItem>
                           <MenuItem value="reading">Reading</MenuItem>
                           <MenuItem value="writing">Writing</MenuItem>
@@ -183,8 +185,8 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                     control={control}
                     render={({ field }) => (
                       <FormControl fullWidth required error={!!errors.difficulty}>
-                        <InputLabel>Độ khó</InputLabel>
-                        <Select {...field} label="Độ khó">
+                        <InputLabel id="test-difficulty-label">Độ khó</InputLabel>
+                        <Select {...field} labelId="test-difficulty-label" id="test-difficulty" label="Độ khó">
                           <MenuItem value="beginner">Beginner</MenuItem>
                           <MenuItem value="intermediate">Intermediate</MenuItem>
                           <MenuItem value="advanced">Advanced</MenuItem>
@@ -201,6 +203,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                     render={({ field }) => (
                       <TextField
                         {...field}
+                        id="test-duration"
                         label="Thời gian (phút)"
                         type="number"
                         fullWidth
@@ -220,6 +223,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                     render={({ field }) => (
                       <TextField
                         {...field}
+                        id="test-total-questions"
                         label="Tổng số câu hỏi"
                         type="number"
                         fullWidth
@@ -239,6 +243,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                     render={({ field }) => (
                       <TextField
                         {...field}
+                        id="test-pass-score"
                         label="Điểm đạt (0-9)"
                         type="number"
                         fullWidth
@@ -274,6 +279,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                       render={({ field }) => (
                         <TextField
                           {...field}
+                          id="test-audio-url"
                           label="URL Audio"
                           fullWidth
                           placeholder="https://example.com/audio.mp3"
@@ -291,6 +297,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                       render={({ field }) => (
                         <TextField
                           {...field}
+                          id="test-reading-passage"
                           label="Đoạn văn đọc"
                           fullWidth
                           multiline
@@ -310,6 +317,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                       render={({ field }) => (
                         <TextField
                           {...field}
+                          id="test-writing-prompt"
                           label="Đề bài writing"
                           fullWidth
                           multiline
@@ -332,6 +340,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                         control={control}
                         render={({ field: { value, onChange } }) => (
                           <TextField
+                              id="test-speaking-topics"
                             fullWidth
                             multiline
                             rows={6}
@@ -365,6 +374,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
 
               <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
                 <TextField
+                  id="test-tag-input"
                   size="small"
                   placeholder="Thêm tag..."
                   value={newTag}
@@ -416,7 +426,7 @@ const CreateTestForm: React.FC<CreateTestFormProps> = ({
                 startIcon={<Save />}
                 disabled={loading}
               >
-                {loading ? 'Đang lưu...' : 'Lưu bài test'}
+                {loading ? 'Đang lưu...' : (initialData?.title ? 'Cập nhật bài test' : 'Lưu bài test')}
               </Button>
             </Stack>
           </Paper>

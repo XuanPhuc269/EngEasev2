@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Box, CircularProgress } from '@mui/material';
 import { useAppSelector } from '@/store/hooks';
@@ -20,12 +20,24 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
 }) => {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
+  const [isMounted, setIsMounted] = useState(false);
 
+  // Track when component mounts on client
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    setIsMounted(true);
+  }, []);
+
+  // Redirect if not authenticated (only on client)
+  useEffect(() => {
+    if (isMounted && !isLoading && !isAuthenticated) {
       router.push(fallbackUrl);
     }
-  }, [isAuthenticated, isLoading, router, fallbackUrl]);
+  }, [isAuthenticated, isLoading, router, fallbackUrl, isMounted]);
+
+  // Don't render anything on server to avoid hydration mismatch
+  if (!isMounted) {
+    return null;
+  }
 
   // Show loading state while checking authentication
   if (isLoading) {

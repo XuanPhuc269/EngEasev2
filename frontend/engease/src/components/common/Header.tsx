@@ -136,7 +136,6 @@ const Header: React.FC = () => {
   };
 
   const navItems = [
-    { label: 'Trang chủ', href: '/', icon: <Home /> },
     { label: 'Bài test', href: '/tests', icon: <School /> },
     { label: 'Tiến độ', href: '/progress', icon: <Assessment />, protected: true },
   ];

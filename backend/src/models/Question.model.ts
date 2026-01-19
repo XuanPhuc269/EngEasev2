@@ -20,6 +20,7 @@ export interface IQuestion extends Document {
     questionNumber: number;
     type: QuestionType;
     question: string;
+    passage?: string; // Reading passage content
     options?: IOption[]; // For multiple choice
     correctAnswer?: string | string[]; // For fill in blank, short answer, matching
     explanation?: string;
@@ -50,6 +51,10 @@ const questionSchema = new Schema<IQuestion>(
         question: {
             type: String,
             required: [true, 'Nội dung câu hỏi là bắt buộc'],
+        },
+        passage: {
+            type: String,
+            default: null,
         },
         options: [
             {

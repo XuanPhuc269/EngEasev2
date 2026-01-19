@@ -33,7 +33,7 @@ import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useGetTestByIdQuery } from '@/store/api/testApi';
-import { useCreateQuestionMutation } from '@/store/api/questionApi';
+import { useCreateQuestionMutation, useGetQuestionsByTestIdQuery } from '@/store/api/questionApi';
 import { QuestionType } from '@/types';
 
 const optionSchema = z.object({
@@ -45,6 +45,7 @@ const questionSchema = z.object({
   questionNumber: z.number().min(1),
   type: z.nativeEnum(QuestionType),
   question: z.string().min(1, 'Câu hỏi không được để trống'),
+  passage: z.string().optional(),
   options: z.array(optionSchema).optional(),
   correctAnswer: z.string().optional(),
   explanation: z.string().optional(),
@@ -62,8 +63,12 @@ const CreateQuestionPage = () => {
   const testId = params?.id as string;
 
   const { data: testData } = useGetTestByIdQuery(testId);
+  const { data: questionsData } = useGetQuestionsByTestIdQuery(testId);
   const [createQuestion, { isLoading }] = useCreateQuestionMutation();
   const [error, setError] = useState<string | null>(null);
+
+  const existingQuestions = questionsData?.data || [];
+  const nextQuestionNumber = existingQuestions.length + 1;
 
   const {
     control,
@@ -73,9 +78,10 @@ const CreateQuestionPage = () => {
   } = useForm<QuestionFormData>({
     resolver: zodResolver(questionSchema),
     defaultValues: {
-      questionNumber: 1,
+      questionNumber: nextQuestionNumber,
       type: QuestionType.MULTIPLE_CHOICE,
       question: '',
+      passage: '',
       options: [
         { text: '', isCorrect: false },
         { text: '', isCorrect: false },
@@ -105,7 +111,7 @@ const CreateQuestionPage = () => {
       // Prepare submission data based on question type
       const submissionData: any = {
         testId,
-        questionNumber: data.questionNumber,
+        questionNumber: nextQuestionNumber, // Always use auto-calculated number
         type: data.type,
         question: data.question,
         points: data.points,
@@ -114,6 +120,11 @@ const CreateQuestionPage = () => {
         audioUrl: data.audioUrl || undefined,
         explanation: data.explanation || undefined,
       };
+
+      // Always include passage if provided
+      if (data.passage && data.passage.trim()) {
+        submissionData.passage = data.passage.trim();
+      }
 
       // Add type-specific fields
       if (data.type === QuestionType.MULTIPLE_CHOICE) {
@@ -131,7 +142,7 @@ const CreateQuestionPage = () => {
         submissionData.correctAnswer = data.correctAnswer || '';
       }
 
-      console.log('Submitting question:', submissionData);
+      console.log('Submitting question with passage:', submissionData);
 
       await createQuestion(submissionData).unwrap();
 
@@ -185,21 +196,13 @@ const CreateQuestionPage = () => {
 
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={4}>
-                    <Controller
-                      name="questionNumber"
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="Số thứ tự"
-                          type="number"
-                          fullWidth
-                          required
-                          error={!!errors.questionNumber}
-                          helperText={errors.questionNumber?.message}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                        />
-                      )}
+                    <TextField
+                      label="Số thứ tự"
+                      type="number"
+                      fullWidth
+                      value={nextQuestionNumber}
+                      disabled
+                      helperText="Số thứ tự được tự động tăng"
                     />
                   </Grid>
 

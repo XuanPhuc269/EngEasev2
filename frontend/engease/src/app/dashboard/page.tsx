@@ -51,9 +51,9 @@ const DashboardPage = () => {
 
   const recentActivities = dashboardData?.recentActivity.results.map((result) => ({
     id: result._id,
-    user: result.userId.name,
+    user: result.userId?.name || 'Người dùng',
     action: 'đã hoàn thành bài test',
-    test: result.testId.title,
+    test: result.testId?.title || 'Bài test',
     score: result.score,
     isPassed: result.isPassed,
     time: formatters.formatRelativeTime(result.createdAt),
@@ -79,47 +79,6 @@ const DashboardPage = () => {
 
       {/* Quick Actions & Recent Activities */}
       <Grid container spacing={3}>
-        {/* Quick Actions */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" fontWeight={600} gutterBottom>
-                Thao tác nhanh
-              </Typography>
-              <Stack spacing={2} sx={{ mt: 2 }}>
-                <Button
-                  component={Link}
-                  href="/dashboard/create-test"
-                  variant="outlined"
-                  fullWidth
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  Tạo bài test mới
-                </Button>
-                <Button
-                  component={Link}
-                  href="/dashboard/manage-users"
-                  variant="outlined"
-                  fullWidth
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  Quản lý người dùng
-                </Button>
-                <Button
-                  component={Link}
-                  href="/dashboard/manage-tests"
-                  variant="outlined"
-                  fullWidth
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  Quản lý bài test
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Recent Activities */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
